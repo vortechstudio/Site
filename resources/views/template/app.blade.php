@@ -82,8 +82,13 @@
                 </div>
                 <!--end::Header-->
                 <!--begin::Landing hero-->
-                <div class="d-flex flex-column flex-center w-100 min-h-350px min-h-lg-500px px-9">
-                    <livewire:blog.slideshow />
+                @if(request()->route()->named('home'))
+                    <div class="d-flex flex-column flex-center w-100 min-h-350px min-h-lg-500px px-9">
+                        <livewire:blog.slideshow />
+                    </div>
+                @else
+                    <livewire:template.toolbar :title="$title" />
+                @endif
                 </div>
                 <!--end::Landing hero-->
             </div>
