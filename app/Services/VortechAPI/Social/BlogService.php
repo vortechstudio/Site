@@ -15,13 +15,13 @@ class BlogService extends Api
     public function search(array $query)
     {
         $blogs = $this->all();
-        $blogs = collect($blogs)->filter(function ($blog) use ($query) {
-            foreach ($query as $field => $value) {
-                return $blog->$field == $value;
-            }
-            return false;
-        });
-        return $blogs->values()->all();
+        $blogs = collect($blogs);
+
+        foreach ($query as $field => $value) {
+            $blogs = $blogs->where($field, $value);
+        }
+
+        return $blogs;
     }
 
 }
