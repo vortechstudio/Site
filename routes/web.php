@@ -16,7 +16,8 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', \App\Livewire\Acceuil::class)->name('home');
 Route::get('/news', \App\Livewire\News\NewsList::class)->name('news');
 Route::get('/blog/{year}/{month}/{slug}', \App\Livewire\News\NewsShow::class)->name('news.show');
-Route::get('/products', \App\Livewire\Acceuil::class)->name('products');
+Route::get('/products', \App\Livewire\Product\ProductList::class)->name('products');
+Route::get('/products/{id}', \App\Livewire\Product\ProductShow::class)->name('products.show');
 Route::get('/about', \App\Livewire\Acceuil::class)->name('about');
 
 Route::get('/account', function () {
