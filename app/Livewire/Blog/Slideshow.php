@@ -12,7 +12,7 @@ class Slideshow extends Component
     public function mount()
     {
         $api = new BlogService();
-        $this->blogs = $api->search(['promote' => true, "published" => true]);
+        $this->blogs = collect($api->search(['promote' => true, "published" => true]))->take(5);
     }
 
     public function render()

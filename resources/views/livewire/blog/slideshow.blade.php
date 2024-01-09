@@ -1,4 +1,4 @@
-<div class="tns z-index-1 w-100 position-relative pt-9 pb-9" style="direction: ltr">
+<div class="tns w-100 z-index-1 pt-3 pb-9" style="direction: ltr">
     <div
         data-tns="true"
         data-tns-loop="true"
@@ -22,7 +22,7 @@
                     </div>
                     <span class="fs-3x text-bold">{{ $blog->cercles[0]->name }}</span>
                     <span class="fs-5x text-bolder">{{ $blog->title }}</span>
-                    <a href="{{ $blog->url_to_blog_article }}" class="btn btn-circle btn-lg btn-outline btn-outline-secondary">
+                    <a href="{{ $blog->url_to_blog_article }}" class="btn rounded-5 btn-lg btn-outline btn-outline-secondary">
                         Plus...
                     </a>
                 </div>
