@@ -4,7 +4,7 @@
         @foreach($menu as $name => $element)
             @if($element['visible'])
             <div class="menu-item">
-                <a class="menu-link py-3 px-4 px-xxl-6 {{ $element['route'] == request()->route()->named($element['route']) ? 'active' : '' }}" href="{{ $element['route'] !== '#' ? route($element['route']) : '#' }}">{{ $element['name'] }}</a>
+                <a class="menu-link py-3 px-4 px-xxl-6 {{ $element['route'] == request()->route()->named($element['route']) ? 'active' : '' }}" href="{{ $element['route'] !== '#' ? route($element['route']) : '#' }}" wire:navigate>{{ $element['name'] }}</a>
             </div>
             @else
                 <div class="me-3">
