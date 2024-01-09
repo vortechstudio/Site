@@ -11,4 +11,10 @@ class Service extends Api
     {
         return $this->get('services');
     }
+
+    public function info(int $id)
+    {
+        $article = collect($this->all());
+        return $article->where('id', $id)->first();
+    }
 }
