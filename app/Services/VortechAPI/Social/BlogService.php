@@ -24,4 +24,12 @@ class BlogService extends Api
         return $blogs;
     }
 
+    public function info(string $slug)
+    {
+        $blogs = $this->all();
+        $blogs = collect($blogs);
+
+        return $blogs->where('slug', $slug)->first();
+    }
+
 }
