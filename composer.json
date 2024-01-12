@@ -15,6 +15,7 @@
         "salahhusa9/laravel-updater": "^1.0"
     },
     "require-dev": {
+        "deployer/deployer": "^7.3",
         "fakerphp/faker": "^1.9.1",
         "laradumps/laradumps": "^2.3",
         "laravel/pint": "^1.13",

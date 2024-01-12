@@ -32,32 +32,22 @@ jobs:
         run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-suggest --no-progress --no-scripts --no-plugins && php artisan insights -n --ansi --format=github-action --no-interaction --min-quality=85 --min-complexity=85 --min-architecture=85 --min-style=85
         continue-on-error: true
 
-      - name: Set up SSH key for Staging
-        if: github.event.pull_request.merged == true
+      - name: Deploy to Staging
+        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
+        run: vendor/bin/dep deploy staging
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
+
+      - name: Deploy to Production
+        if: github.event_name == 'release' && github.event.action == 'published'
+        run: vendor/bin/dep deploy production
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
+
+      - name: Set up Private Key
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.STAGING_DEPLOY_KEY }}" > ~/.ssh/id_rsa
+          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
-
-      - name: Set up SSH key for Production
-        if: github.event_name == 'release' && github.event.action == 'published'
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PRODUCTION_DEPLOY_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
-
-      - name: Deploy to Staging Server
-        if: github.event.pull_request.merged == true
-        run: ssh -i ~/.ssh/id_rsa deploy@${{ secrets.STAGING_SERVER }} 'bash -s' < deploy.sh "${{ secrets.STAGING_ENV_VARS }}" "${{ secrets.STAGING_PATH_FILES }}" "${{ secrets.SLACK_WEBHOOK_URL }}"
-        env:
-          DEPLOY_BRANCH: ${{ github.ref }}
-          DEPLOY_ENV: staging
-
-      - name: Deploy to Production Server
-        if: github.event_name == 'release' && github.event.action == 'published'
-        run: ssh -i ~/.ssh/id_rsa deploy@${{ secrets.PRODUCTION_SERVER }} 'bash -s' < deploy.sh "${{ secrets.PRODUCTION_ENV_VARS }}" "${{ secrets.STAGING_PATH_FILES }}" "${{ secrets.SLACK_WEBHOOK_URL }}"
-        env:
-          DEPLOY_BRANCH: ${{ github.ref }}
-          DEPLOY_ENV: production
