@@ -29,8 +29,7 @@ jobs:
         run: npm run build
 
       - name: Run PHP Insights
-        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-suggest --no-progress --no-scripts --no-plugins
-        run: php artisan insights -n --ansi --format=github-action --no-interaction --min-quality=85 --min-complexity=85 --min-architecture=85 --min-style=85
+        run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-suggest --no-progress --no-scripts --no-plugins && php artisan insights -n --ansi --format=github-action --no-interaction --min-quality=85 --min-complexity=85 --min-architecture=85 --min-style=85
         continue-on-error: true
 
       - name: Deploy to Staging Server
