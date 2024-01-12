@@ -33,21 +33,23 @@ jobs:
         continue-on-error: true
 
       - name: Deploy to Staging
-        if: github.event_name == 'push' && github.ref == 'refs/heads/master'
-        run: vendor/bin/dep deploy staging
+        if: github.ref == 'refs/heads/master'
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
+          vendor/bin/dep deploy staging --branch=master
         env:
-          SSH_PRIVATE_KEY: ${{ secrets.STAGING_DEPLOY_KEY }}
+          SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
 
       - name: Deploy to Production
         if: github.event_name == 'release' && github.event.action == 'published'
-        run: vendor/bin/dep deploy production
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_DEPLOY_KEY }}
-
-      - name: Set up Private Key
         run: |
           mkdir -p ~/.ssh
-          echo "$SSH_PRIVATE_KEY" > ~/.ssh/id_rsa
+          echo "${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
           ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
+          vendor/bin/dep deploy production --branch=master
+        env:
+          SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
