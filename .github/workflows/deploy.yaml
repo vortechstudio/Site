@@ -1,0 +1,47 @@
+name: Déploiement de l'application
+
+on:
+  pull_request:
+    branches: [master]
+    types: [closed]
+  release:
+    types: [published]
+
+jobs:
+  build-and-deploy:
+    if: (github.event.pull_request.merged == true) || (github.event_name == 'release' && github.event.action == 'published')
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Set Up PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.2'
+          tools: phpinsights
+
+      - name: Install NPM dependencies
+        run: npm install
+
+      - name: Build assets
+        run: npm run build
+
+      - name: Run PHP Insights
+        run: php artisan insights -n --ansi --format=github-action --no-interaction --min-quality=85 --min-complexity=85 --min-architecture=85 --min-style=85
+        continue-on-error: true
+
+      - name: Deploy to Staging Server
+        if: github.event.pull_request.merged == true
+        run: ssh username@${{ secrets.STAGING_SERVER }} 'bash -s' < deploy.sh "${{ secrets.STAGING_ENV_VARS }}" "${{ secrets.STAGING_PATH_FILES }}" "${{ secrets.SLACK_WEBHOOK_URL }}"
+        env:
+          DEPLOY_BRANCH: ${{ github.ref }}
+          DEPLOY_ENV: staging
+
+      - name: Deploy to Production Server
+        if: github.event_name == 'release' && github.event.action == 'published'
+        run: ssh username@${{ secrets.PRODUCTION_SERVER }} 'bash -s' < deploy.sh "${{ secrets.PRODUCTION_ENV_VARS }}" "${{ secrets.STAGING_PATH_FILES }}" "${{ secrets.SLACK_WEBHOOK_URL }}"
+        env:
+          DEPLOY_BRANCH: ${{ github.ref }}
+          DEPLOY_ENV: production
