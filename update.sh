@@ -9,12 +9,10 @@ if [ "$ENV" == "staging" ]; then
     php artisan db:seed --class=TestSeeder --force
     php artisan optimize:clear
     php artisan up
-elif [ "$ENV" == "production" ]; then
+else
     echo "Deploying PROD environment"
     php artisan down
     php artisan migrate --force
     php artisan optimize:clear
     php artisan up
-else
-    echo "Unknown environment"
 fi
