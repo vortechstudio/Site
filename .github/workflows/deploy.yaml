@@ -3,13 +3,9 @@ name: Déploiement de l'application
 on:
   pull_request:
     branches: [master]
-    types: [closed]
-  release:
-    types: [published]
 
 jobs:
   build-and-deploy:
-    if: (github.event.pull_request.merged == true) || (github.event_name == 'release' && github.event.action == 'published')
     runs-on: ubuntu-latest
 
     steps:
@@ -20,7 +16,6 @@ jobs:
         uses: shivammathur/setup-php@v2
         with:
           php-version: '8.2'
-          tools: phpinsights
 
       - name: Install NPM dependencies
         run: npm install
@@ -31,25 +26,3 @@ jobs:
       - name: Run PHP Insights
         run: composer install --no-interaction --prefer-dist --optimize-autoloader --no-suggest --no-progress --no-scripts --no-plugins && php artisan insights -n --ansi --format=github-action --no-interaction --min-quality=85 --min-complexity=85 --min-architecture=85 --min-style=85
         continue-on-error: true
-
-      - name: Deploy to Staging
-        if: github.ref == 'refs/heads/master'
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
-          vendor/bin/dep deploy 82.64.133.182 --branch=master
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
-
-      - name: Deploy to Production
-        if: github.event_name == 'release' && github.event.action == 'published'
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
-          vendor/bin/dep deploy 37.187.117.190 --branch=master
-        env:
-          SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
