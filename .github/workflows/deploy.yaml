@@ -39,7 +39,7 @@ jobs:
           echo "${{ secrets.STAGING_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.STAGING_SERVER }} >> ~/.ssh/known_hosts
-          vendor/bin/dep deploy staging --branch=master
+          vendor/bin/dep deploy 82.64.133.182 --branch=master
         env:
           SSH_PRIVATE_KEY: ${{ secrets.STAGING_SSH_PRIVATE_KEY }}
 
@@ -50,6 +50,6 @@ jobs:
           echo "${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           ssh-keyscan -H ${{ secrets.PRODUCTION_SERVER }} >> ~/.ssh/known_hosts
-          vendor/bin/dep deploy production --branch=master
+          vendor/bin/dep deploy 37.187.117.190 --branch=master
         env:
           SSH_PRIVATE_KEY: ${{ secrets.PRODUCTION_SSH_PRIVATE_KEY }}
