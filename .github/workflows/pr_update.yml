@@ -21,4 +21,8 @@ jobs:
           TITLE=$(echo "$COMMITS" | head -n 1)
           DESCRIPTION=$(echo "$COMMITS" | tail -n +2)
 
-          gh pr edit $PR_NUMBER --title "$TITLE" --body "$DESCRIPTION"
+          if [ -n "$TITLE" ]; then
+            gh pr edit $PR_NUMBER --title "$TITLE" --body "$DESCRIPTION"
+          else
+            echo "Le titre est vide, la mise à jour du PR est annulée."
+          fi
