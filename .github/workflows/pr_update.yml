@@ -17,9 +17,9 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.ACCESS_TOKEN }}
         run: |
           PR_NUMBER=$(jq --raw-output .pull_request.number "$GITHUB_EVENT_PATH")
-          COMMITS=$(gh pr view $PR_NUMBER --json commits --jq '.commits[].commit.message')
-          TITLE=$(echo "$COMMITS" | head -n 1)
-          DESCRIPTION=$(echo "$COMMITS" | tail -n +2)
+          COMMITS=$(gh pr view $PR_NUMBER --json commits --jq '.commits[].messageBody')
+          TITLE=$(gh pr view $PR_NUMBER --json commits --jq '.commits[].messageHeadline')
+          DESCRIPTION=$(gh pr view $PR_NUMBER --json commits --jq '.commits[].messageBody')
 
           if [ -n "$TITLE" ]; then
             gh pr edit $PR_NUMBER --title "$TITLE" --body "$DESCRIPTION"
